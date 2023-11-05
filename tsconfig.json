@@ -5,5 +5,5 @@
     "lib": ["DOM"],
     "outDir": "build"
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "include": ["util/**/*.ts", "test/**/*.ts"]
 }
