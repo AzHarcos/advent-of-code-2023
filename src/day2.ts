@@ -1,5 +1,4 @@
-import {readInputFile, readInputFileToLines} from '../util/read-input-file';
-import {sum, max, min, sortAsc, sortDsc} from '../util/array-utils';
+import {readInputFile} from '../util/read-input-file';
 
 type Shape = 'Rock' | 'Paper' | 'Scissors';
 type Outcome = 'Loss' | 'Draw' | 'Win';
