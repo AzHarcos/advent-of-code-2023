@@ -1,9 +1,11 @@
 import {readInputFile} from '../util/read-input-file';
+import {sumReducer} from '../util/array-utils';
 
 type Shape = 'Rock' | 'Paper' | 'Scissors';
 type Outcome = 'Loss' | 'Draw' | 'Win';
 type ElfOption = 'A' | 'B' | 'C';
 type MyOption = 'X' | 'Y' | 'Z';
+type GameDescription = `${ElfOption} ${MyOption}`;
 
 const elfChoices: Record<ElfOption, Shape> = {
   A: 'Rock',
@@ -55,12 +57,11 @@ const determineShape = (elfShape: Shape, outcome: Outcome): Shape => {
   return outcome === 'Loss' ? 'Paper' : 'Rock';
 };
 
-const determineScorePart1 = (
-  elfOption: ElfOption,
-  myOption: MyOption
-): number => {
-  const elfShape = elfChoices[elfOption];
-  const myShape = myChoicesPart1[myOption];
+const determineScorePart1 = (gameDescription: GameDescription): number => {
+  const [elfSelection, mySelection] = gameDescription.split(' ');
+
+  const elfShape = elfChoices[elfSelection];
+  const myShape = myChoicesPart1[mySelection];
 
   if (!elfShape || !myShape) return 0;
 
@@ -69,12 +70,11 @@ const determineScorePart1 = (
   return outcomeToScore[outcome] + shapeToScore[myShape];
 };
 
-const determineScorePart2 = (
-  elfOption: ElfOption,
-  myOption: MyOption
-): number => {
-  const elfShape = elfChoices[elfOption];
-  const outcome = myChoicesPart2[myOption];
+const determineScorePart2 = (gameDescription: GameDescription): number => {
+  const [elfSelection, mySelection] = gameDescription.split(' ');
+
+  const elfShape = elfChoices[elfSelection];
+  const outcome = myChoicesPart2[mySelection];
 
   if (!elfShape || !outcome) return 0;
 
@@ -84,27 +84,23 @@ const determineScorePart2 = (
 };
 
 const solveDay2 = () => {
-  const strategyGuideRounds = readInputFile(2022, 2).split('\n');
+  const strategyGuideRounds = readInputFile(2022, 2).split(
+    '\n'
+  ) as GameDescription[];
 
-  const scorePart1 = strategyGuideRounds.reduce((sum, choices) => {
-    const elfChoice = choices[0] as ElfOption;
-    const myChoice = choices[2] as MyOption;
+  // Part 1: Score for given shapes
+  const sumForGivenShapes = strategyGuideRounds
+    .map(determineScorePart1)
+    .reduce(sumReducer);
 
-    return sum + determineScorePart1(elfChoice, myChoice);
-  }, 0);
+  console.log(`Part 1: ${sumForGivenShapes}`);
 
-  const scorePart2 = strategyGuideRounds.reduce((sum, choices) => {
-    const elfChoice = choices[0] as ElfOption;
-    const myChoice = choices[2] as MyOption;
+  // Part 2: Score for given outcomes
+  const sumForGivenOutcomes = strategyGuideRounds
+    .map(determineScorePart2)
+    .reduce(sumReducer);
 
-    return sum + determineScorePart2(elfChoice, myChoice);
-  }, 0);
-
-  // Part 1: Score
-  console.log(`Part 1: ${scorePart1}`);
-
-  // Part 2: Score
-  console.log(`Part 2: ${scorePart2}`);
+  console.log(`Part 2: ${sumForGivenOutcomes}`);
 };
 
 solveDay2();
