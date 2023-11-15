@@ -61,7 +61,7 @@ const solveDay4 = () => {
   ).length;
   console.log(`Part 1: ${fullyContainedRangesCount}`);
 
-  // Part 1: Number of overlapping ranges
+  // Part 2: Number of overlapping ranges
   const overlappingRangesCount = rangesPerLine.filter(hasOverlap).length;
   console.log(`Part 2: ${overlappingRangesCount}`);
 };
