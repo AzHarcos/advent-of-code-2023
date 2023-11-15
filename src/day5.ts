@@ -63,13 +63,10 @@ const executeMove =
     const updatedSource = stacks[move.source].slice(move.count);
     const updatedTarget = `${cargoToMove}${stacks[move.target]}`;
 
-    const firstIndex = Math.min(move.source, move.target);
-    const secondIndex = Math.max(move.source, move.target);
-
-    const updatedFirst =
-      move.source < move.target ? updatedSource : updatedTarget;
-    const updatedSecond =
-      move.source > move.target ? updatedSource : updatedTarget;
+    const [firstIndex, secondIndex, updatedFirst, updatedSecond] =
+      move.source < move.target
+        ? [move.source, move.target, updatedSource, updatedTarget]
+        : [move.target, move.source, updatedTarget, updatedSource];
 
     const stacksBefore = stacks.slice(0, firstIndex);
     const stacksBetween = stacks.slice(firstIndex + 1, secondIndex);
