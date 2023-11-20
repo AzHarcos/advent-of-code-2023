@@ -39,11 +39,7 @@ const parseMove = (moveDescription: string): Move => {
   };
 };
 
-const getCargoToMove = (
-  stack: Stack,
-  count: number,
-  moveMultiple: boolean
-): string => {
+const getCargoToMove = (stack: Stack, count: number, moveMultiple: boolean): string => {
   const cargoToMove = stack.slice(0, count);
 
   if (moveMultiple) return cargoToMove;
@@ -54,11 +50,7 @@ const getCargoToMove = (
 const executeMove =
   (moveMultiple = false) =>
   (stacks: Stacks, move: Move): Stacks => {
-    const cargoToMove = getCargoToMove(
-      stacks[move.source],
-      move.count,
-      moveMultiple
-    );
+    const cargoToMove = getCargoToMove(stacks[move.source], move.count, moveMultiple);
 
     const updatedSource = stacks[move.source].slice(move.count);
     const updatedTarget = `${cargoToMove}${stacks[move.target]}`;
@@ -72,13 +64,7 @@ const executeMove =
     const stacksBetween = stacks.slice(firstIndex + 1, secondIndex);
     const stacksAfter = stacks.slice(secondIndex + 1);
 
-    return [
-      ...stacksBefore,
-      updatedFirst,
-      ...stacksBetween,
-      updatedSecond,
-      ...stacksAfter,
-    ];
+    return [...stacksBefore, updatedFirst, ...stacksBetween, updatedSecond, ...stacksAfter];
   };
 
 const getTopOfStacks = (stacks: Stacks): string => {

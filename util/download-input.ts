@@ -1,13 +1,8 @@
 import {writeFileSync} from 'fs';
 
-const SESSION_TOKEN =
-  '53616c7465645f5f6525c0e2b809838ed4788979869d7551c457176beea09d2b57e35fb2a249f6b64d3267236fa0f9d97429c208d1628738507e560453dfe738';
+const SESSION_TOKEN = '';
 
-const downloadInput = async (
-  year: number,
-  day: number,
-  session: string
-): Promise<void> => {
+const downloadInput = async (year: number, day: number, session: string): Promise<void> => {
   return fetch(`https://adventofcode.com/${year}/day/${day}/input`, {
     headers: {
       Cookie: `session=${session}`,

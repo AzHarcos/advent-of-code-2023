@@ -84,21 +84,15 @@ const determineScorePart2 = (gameDescription: GameDescription): number => {
 };
 
 const solveDay2 = () => {
-  const strategyGuideRounds = readInputFile(2022, 2).split(
-    '\n'
-  ) as GameDescription[];
+  const strategyGuideRounds = readInputFile(2022, 2).split('\n') as GameDescription[];
 
   // Part 1: Score for given shapes
-  const sumForGivenShapes = strategyGuideRounds
-    .map(determineScorePart1)
-    .reduce(sumReducer);
+  const sumForGivenShapes = strategyGuideRounds.map(determineScorePart1).reduce(sumReducer);
 
   console.log(`Part 1: ${sumForGivenShapes}`);
 
   // Part 2: Score for given outcomes
-  const sumForGivenOutcomes = strategyGuideRounds
-    .map(determineScorePart2)
-    .reduce(sumReducer);
+  const sumForGivenOutcomes = strategyGuideRounds.map(determineScorePart2).reduce(sumReducer);
 
   console.log(`Part 2: ${sumForGivenOutcomes}`);
 };

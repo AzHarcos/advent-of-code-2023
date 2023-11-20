@@ -4,9 +4,7 @@ import {sum, max, sortAsc} from '../util/array-utils';
 const solveDay1 = () => {
   const caloryLists = readInputFile(2022, 1).split('\n\n');
 
-  const caloryTotals = caloryLists.map(text =>
-    sum(text.split('\n').map(Number))
-  );
+  const caloryTotals = caloryLists.map(text => sum(text.split('\n').map(Number)));
 
   // Part 1: Highest calory sum
   const highestCalories = max(caloryTotals);
