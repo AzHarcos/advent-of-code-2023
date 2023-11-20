@@ -1,7 +1,5 @@
 import {readInputFile} from '../util/read-input-file';
-import {sum, min, max, sortAsc, sortDsc, getChunks, sumReducer} from '../util/array-utils';
-import {Dir} from 'fs';
-import {dir} from 'console';
+import {sum, sortAsc} from '../util/array-utils';
 
 type File = {
   name: string;
