@@ -1,6 +1,10 @@
 export const sumReducer = (a: number, b: number): number => a + b;
 
+export const mulReducer = (a: number, b: number): number => a * b;
+
 export const sum = (nums: number[]): number => nums.reduce(sumReducer, 0);
+
+export const mul = (nums: number[]): number => nums.reduce(mulReducer, 1);
 
 export const max = (nums: number[]): number => Math.max(...nums);
 
