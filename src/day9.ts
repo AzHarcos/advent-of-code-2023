@@ -141,3 +141,61 @@ const solveDay9 = () => {
 };
 
 solveDay9();
+
+/* Functional solution with much worse performance:
+
+type RopeState = {
+  positionsVisitedByTail: Record<PositionDescription, Position>;
+  knotPositions: Position[];
+};
+
+const moveKnot = (index: number, knotPositions: Position[], step: Step): Position[] => {
+  const isHead = index === 0;
+
+  if (isHead) {
+    const updatedHead = moveHead(knotPositions[0], step);
+    return [updatedHead, ...knotPositions.slice(1)];
+  }
+
+  const previousKnots = knotPositions.slice(0, index);
+  const followingKnots = knotPositions.slice(index + 1);
+
+  const updatedKnot = moveTail(knotPositions[index - 1], knotPositions[index]);
+
+  return [...previousKnots, updatedKnot, ...followingKnots];
+};
+
+const moveRope = (knotPositions: Position[], step: Step): Position[] => {
+  return knotPositions.reduce((updatedPositions, _, index) => {
+    return moveKnot(index, updatedPositions, step);
+  }, knotPositions);
+};
+
+const findPositionsVisitedByTail = (knotCount: number, moves: Move[]): Set<Position> => {
+  const startPositions = Array(knotCount).fill({...START_POSITION});
+
+  const steps = moves.flatMap(mapMoveToSteps);
+
+  const finalRopeState = steps.reduce<RopeState>(
+    (acc, step, i) => {
+      const updatedKnotPositions = moveRope(acc.knotPositions, step);
+      const tailPosition = updatedKnotPositions[updatedKnotPositions.length - 1];
+
+      return {
+        positionsVisitedByTail: {
+          ...acc.positionsVisitedByTail,
+          [getPositionDescription(tailPosition)]: tailPosition,
+        },
+        knotPositions: updatedKnotPositions,
+      };
+    },
+    {
+      positionsVisitedByTail: {},
+      knotPositions: startPositions,
+    }
+  );
+
+  return new Set(Object.values(finalRopeState.positionsVisitedByTail));
+};
+
+*/
