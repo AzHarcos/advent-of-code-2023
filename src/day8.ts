@@ -14,7 +14,7 @@ type Direction = {
   col: -1 | 0 | 1;
 };
 
-type TreeVisiblityFunction = (tree: Tree) => boolean;
+type TreeVisibilityFunction = (tree: Tree) => boolean;
 type TreeScoreFunction = (tree: Tree) => number;
 
 const directions: Direction[] = [
@@ -42,7 +42,7 @@ const createTree = (row: number, col: number, height: number): Tree => ({
 
 const treeToString = (tree: Tree): string => `${tree.col}/${tree.row}`;
 
-const findVisibleTrees = (trees: Tree[], isTreeVisible: TreeVisiblityFunction): Set<Tree> => {
+const findVisibleTrees = (trees: Tree[], isTreeVisible: TreeVisibilityFunction): Set<Tree> => {
   const visibleTrees: Record<string, Tree> = trees.reduce((visibleTrees, tree) => {
     if (!isTreeVisible(tree)) return visibleTrees;
 
