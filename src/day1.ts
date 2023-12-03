@@ -1,5 +1,5 @@
 import {readInputFile} from '../util/read-input-file';
-import {sum} from '../util/array-utils';
+import {sum, sumReducer} from '../util/array-utils';
 
 const numeralPattern = /^(one|two|three|four|five|six|seven|eight|nine)/;
 const numeralToDigit = {
@@ -18,11 +18,11 @@ const isDigit = (str: string): boolean => {
   return /\d/.test(str);
 };
 
-const findDigits = (str: string): number[] => {
+const parseDigits = (str: string): number[] => {
   return [...str].filter(isDigit).map(Number);
 };
 
-const findDigitsIncludingNumerals = (str: string): number[] => {
+const parseDigitsIncludingNumerals = (str: string): number[] => {
   return [...str].reduce<number[]>((acc, curr, index) => {
     if (isDigit(curr)) return [...acc, Number(curr)];
 
@@ -34,30 +34,32 @@ const findDigitsIncludingNumerals = (str: string): number[] => {
   }, []);
 };
 
-const parseCalibrationValue =
-  (includeNumerals: boolean) =>
-  (calibrationValueRaw: string): number => {
-    const digits = includeNumerals ? findDigitsIncludingNumerals(calibrationValueRaw) : findDigits(calibrationValueRaw);
+const digitsToCalibrationValue = (digits: number[]): number => {
+  if (digits.length === 0) return 0;
 
-    if (digits.length === 0) return 0;
+  const [firstDigit, lastDigit] = [digits[0], digits.at(-1)];
 
-    const [firstDigit, lastDigit] = [digits[0], digits.at(-1)];
+  if (!firstDigit || !lastDigit) return 0;
 
-    if (!lastDigit) throw new Error(`Did not find valid digit for calibration string ${calibrationValueRaw}`);
-
-    return firstDigit * 10 + lastDigit;
-  };
+  return firstDigit * 10 + lastDigit;
+};
 
 const solveDay1 = () => {
   const calibrationValuesRaw = readInputFile(2023, 1).split('\n');
 
   // Part 1: Sum of calibration values (first and last digit of each line)
-  const calibrationValuesForDigits = calibrationValuesRaw.map(parseCalibrationValue(false));
-  console.log(`Part 1: ${sum(calibrationValuesForDigits)}`);
+  const calibrationSumForDigits = calibrationValuesRaw
+    .map(parseDigits)
+    .map(digitsToCalibrationValue)
+    .reduce(sumReducer);
+  console.log(`Part 1: ${calibrationSumForDigits}`);
 
   // Part 2: Sum of calibration values (first and last digit of each line, including numerals "one"-"nine")
-  const calibrationValuesForDigitsAndNumerals = calibrationValuesRaw.map(parseCalibrationValue(true));
-  console.log(`Part 2: ${sum(calibrationValuesForDigitsAndNumerals)}`);
+  const calibrationSumForDigitsAndNumerals = calibrationValuesRaw
+    .map(parseDigitsIncludingNumerals)
+    .map(digitsToCalibrationValue)
+    .reduce(sumReducer);
+  console.log(`Part 2: ${calibrationSumForDigitsAndNumerals}`);
 };
 
 solveDay1();
