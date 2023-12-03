@@ -22,4 +22,4 @@ const writeToFile = (data: string, year: number, day: number): void => {
   return writeFileSync(fileName, data);
 };
 
-downloadInput(2022, 1, SESSION_TOKEN);
+downloadInput(2023, 1, SESSION_TOKEN);
