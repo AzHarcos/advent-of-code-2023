@@ -51,11 +51,11 @@ const parseCalibrationValue =
 const solveDay1 = () => {
   const calibrationValuesRaw = readInputFile(2023, 1).split('\n');
 
-  // Part 1: Sum of calibration values (first and last digit of each row)
+  // Part 1: Sum of calibration values (first and last digit of each line)
   const calibrationValuesForDigits = calibrationValuesRaw.map(parseCalibrationValue(false));
   console.log(`Part 1: ${sum(calibrationValuesForDigits)}`);
 
-  // Part 2: Sum of calibration values (first and last digit of each row, including numerals "one"-"nine")
+  // Part 2: Sum of calibration values (first and last digit of each line, including numerals "one"-"nine")
   const calibrationValuesForDigitsAndNumerals = calibrationValuesRaw.map(parseCalibrationValue(true));
   console.log(`Part 2: ${sum(calibrationValuesForDigitsAndNumerals)}`);
 };
