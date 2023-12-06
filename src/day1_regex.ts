@@ -1,5 +1,5 @@
 import {readInputFile} from '../util/read-input-file';
-import {sum, sumReducer} from '../util/array-utils';
+import {sumReducer} from '../util/array-utils';
 
 const digitPattern = /\d/g;
 const numeralPattern = /(?=(\d|one|two|three|four|five|six|seven|eight|nine))/g;
