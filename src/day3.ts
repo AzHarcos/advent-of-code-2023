@@ -1,131 +1,113 @@
 import {readInputFile, readInputFileRaw} from '../util/read-input-file';
 import {sum, mul, min, max, sortAsc, sortDsc, getChunks, sumReducer, mulReducer} from '../util/array-utils';
+import {isDigit} from '../util/string-utils';
+
+type Grid = string[][];
+
+type CoordinateString = `${number}/${number}`;
+
+type CoordinatesToAdjacentNumbers = Record<CoordinateString, number[]>;
+
+type Cell = {
+  content?: string;
+  row: number;
+  col: number;
+};
 
 type Direction = {
-  x: -1 | 0 | 1;
-  y: -1 | 0 | 1;
+  row: -1 | 0 | 1;
+  col: -1 | 0 | 1;
 };
 
 const directions: Direction[] = [
-  {
-    x: -1,
-    y: -1,
-  },
-  {
-    x: -1,
-    y: 0,
-  },
-  {
-    x: -1,
-    y: 1,
-  },
-  {
-    x: 0,
-    y: -1,
-  },
-  {
-    x: 0,
-    y: 1,
-  },
-  {
-    x: 1,
-    y: -1,
-  },
-  {
-    x: 1,
-    y: 0,
-  },
-  {
-    x: 1,
-    y: 1,
-  },
+  {row: -1, col: -1},
+  {row: -1, col: 0},
+  {row: -1, col: 1},
+  {row: 0, col: -1},
+  {row: 0, col: 1},
+  {row: 1, col: -1},
+  {row: 1, col: 0},
+  {row: 1, col: 1},
 ];
 
-const getNumberStartingAt = (grid: string[][], i: number, j: number): number => {
-  let numberStr = '';
-  let index = j;
-  while (index < grid.length && /\d/.test(grid[i][index])) {
-    numberStr += grid[i][index];
-    index++;
-  }
+const isSymbol = (cell: Cell): boolean => !!cell.content && /^[^\d.]$/.test(cell.content);
 
-  index = j - 1;
-  while (index >= 0 && /\d/.test(grid[i][index])) {
-    numberStr = `${grid[i][index]}${numberStr}`;
-    index--;
-  }
+const isStarSymbol = (cell: Cell): boolean => cell.content === '*';
 
-  return Number(numberStr);
-};
+const isGear = (adjacentNumbers: number[]) => adjacentNumbers.length === 2;
 
-const getGearRatio = (grid: string[][], i: number, j: number): number => {
-  const numbers = directions
-    .map(direction => ({
-      x: i + direction.x,
-      y: j + direction.y,
-      symbol: grid[i + direction.x][j + direction.y],
-    }))
-    .filter(num => /\d/.test(num.symbol));
+const getGearPower = (adjacentNumbers: number[]) => mul(adjacentNumbers);
 
-  const filNums = numbers.filter(num => !numbers.some(n => n.x === num.x && n.y - 1 === num.y));
+const cellToCoordinateString = (cell: Cell): CoordinateString => `${cell.row}/${cell.col}`;
 
-  if (filNums.length !== 2) return 0;
-
-  return mul(filNums.map(num => getNumberStartingAt(grid, num.x, num.y)));
+const getAdjacentCells = (grid: Grid, cell: Cell): Cell[] => {
+  return directions.map(direction => ({
+    row: cell.row + direction.row,
+    col: cell.col + direction.col,
+    content: grid[cell.row + direction.row]?.[cell.col + direction.col],
+  }));
 };
 
 const solveDay3 = () => {
   const rows = readInputFile(2023, 3).split('\n');
 
-  const grid: string[][] = rows.map(row => [...row]);
+  const grid = rows.map(row => row.split(''));
 
-  let currNumber = '';
-  let numbers: number[] = [];
+  let numberString = '';
   let touchesSymbol = false;
-  let gears: number[] = [];
 
-  for (let i = 0; i < grid.length; i++) {
-    currNumber = '';
-    touchesSymbol = false;
-    for (let j = 0; j < grid[i].length; j++) {
-      const char = grid[i][j];
+  let partNumbers: number[] = [];
+  let adjacentStars = new Set<CoordinateString>();
+  let starCellsToAdjacentNumbers: CoordinatesToAdjacentNumbers = {};
 
-      if (char === '*') {
-        gears.push(getGearRatio(grid, i, j));
-      }
+  for (let row = 0; row < grid.length; row++) {
+    for (let col = 0; col < grid[row].length; col++) {
+      const char = grid[row][col];
 
-      if (/\d/.test(char)) {
-        currNumber += char;
-        if (!touchesSymbol) {
-          touchesSymbol = directions.some(direction => {
-            const adjacentChar = grid[i + direction.y]?.[j + direction.x];
+      if (isDigit(char)) {
+        numberString += char;
 
-            return adjacentChar !== undefined && !/(\d|\.)/.test(adjacentChar);
+        const adjacentCells = getAdjacentCells(grid, {row, col});
+        touchesSymbol = touchesSymbol || adjacentCells.some(isSymbol);
+        adjacentCells.filter(isStarSymbol).forEach(cell => adjacentStars.add(cellToCoordinateString(cell)));
+      } else {
+        if (numberString.length > 0 && touchesSymbol) {
+          const partNumber = Number(numberString);
+          partNumbers.push(partNumber);
+
+          adjacentStars.forEach(starCoordinates => {
+            const adjacentNumbers = starCellsToAdjacentNumbers[starCoordinates] ?? [];
+            starCellsToAdjacentNumbers[starCoordinates] = [...adjacentNumbers, partNumber];
           });
         }
-      } else if (currNumber.length > 0) {
-        if (touchesSymbol) {
-          numbers.push(Number(currNumber));
-        }
-        currNumber = '';
+        numberString = '';
         touchesSymbol = false;
+        adjacentStars.clear();
       }
     }
-    if (touchesSymbol) {
-      numbers.push(Number(currNumber));
+    if (numberString.length > 0 && touchesSymbol) {
+      const partNumber = Number(numberString);
+      partNumbers.push(partNumber);
+
+      adjacentStars.forEach(starCoordinates => {
+        const adjacentNumbers = starCellsToAdjacentNumbers[starCoordinates] ?? [];
+        starCellsToAdjacentNumbers[starCoordinates] = [...adjacentNumbers, partNumber];
+      });
     }
-    currNumber = '';
+    numberString = '';
     touchesSymbol = false;
+    adjacentStars.clear();
   }
 
-  console.log(numbers);
-  console.log(sum(numbers));
+  // Part 1: Sum of part numbers (numbers adjacent to at least 1 symbol)
+  console.log(`Part 1: ${sum(partNumbers)}`);
 
-  console.log(gears);
-  console.log(sum(gears));
-
-  // Part 1:
-  //console.log(`Part 1: ${input}`);
+  // Part 2: Sum of gear ratios (products of numbers adjacent to * symbols with exactly 2 adjacent numbers)
+  const sumOfGearPowers = Object.values(starCellsToAdjacentNumbers)
+    .filter(isGear)
+    .map(getGearPower)
+    .reduce(sumReducer);
+  console.log(`Part 2: ${sumOfGearPowers}`);
 };
 
 solveDay3();
