@@ -1,5 +1,5 @@
-import {readInputFile, readInputFileRaw} from '../util/read-input-file';
-import {sum, mul, min, max, sortAsc, sortDsc, getChunks, sumReducer, mulReducer} from '../util/array-utils';
+import {readInputFile} from '../util/read-input-file';
+import {sum, mul, sumReducer} from '../util/array-utils';
 import {isDigit} from '../util/string-utils';
 
 type Grid = string[][];
