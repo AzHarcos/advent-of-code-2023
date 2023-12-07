@@ -2,6 +2,15 @@ import {readInputFile, readInputFileRaw} from '../util/read-input-file';
 import {sum, mul, min, max, sortAsc, sortDsc, getChunks, sumReducer, mulReducer} from '../util/array-utils';
 import {isDigit} from '../util/string-utils';
 
+const findNumberOfWaysToWin = (time: number, distance: number): number => {
+  const rootTerm = Math.sqrt((time / 2) ** 2 - distance);
+
+  const highestWinningChargeTime = time / 2 + rootTerm;
+  const lowestWinningChargeTime = time / 2 - rootTerm;
+
+  return Math.floor(highestWinningChargeTime) - Math.ceil(lowestWinningChargeTime) + 1;
+};
+
 const solveDay6 = () => {
   const input = readInputFile(2023, 6).split('\n');
 
@@ -14,16 +23,7 @@ const solveDay6 = () => {
   for (let i = 0; i < times.length; i++) {
     const time = times[i];
     const distance = distances[i];
-    let waysOfRace = 0;
-
-    for (let h = 1; h < time; h++) {
-      const travel = (time - h) * h;
-      if (travel > distance) {
-        waysOfRace++;
-      }
-    }
-
-    ways.push(waysOfRace);
+    ways.push(findNumberOfWaysToWin(time, distance));
   }
 
   console.log(times, distances);
@@ -52,10 +52,11 @@ const solveDay6_2 = () => {
 
   const waysToWin = Math.floor(maxTime) - Math.ceil(minTime) + 1;
 
-  console.log(waysToWin);
+  console.log(findNumberOfWaysToWin(time, distance));
 
   // Part 1:
   //console.log(`Part 1: ${input}`);
 };
 
+solveDay6();
 solveDay6_2();
