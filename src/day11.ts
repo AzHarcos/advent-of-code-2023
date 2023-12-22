@@ -77,10 +77,10 @@ const solveDay11 = () => {
 
   const galaxies = findGalaxies(grid);
 
-  // Part 1:
+  // Part 1: Sum of distances for expansion size 1
   console.log(`Part 1: ${getSumOfDistances(galaxies, 1)}`);
 
-  // Part 2:
+  // Part 2: Sum of distances for expansion size 999999
   console.log(`Part 2: ${getSumOfDistances(galaxies, 999999)}`);
 };
 
