@@ -7,11 +7,6 @@ type Galaxy = {
   col: number;
 };
 
-type Expansions = {
-  rows: number[];
-  cols: number[];
-};
-
 const GALAXY = '#';
 
 const parseGrid = (gridDescription: string): Grid => {
@@ -34,7 +29,28 @@ const findGalaxies = (grid: Grid): Galaxy[] => {
   return galaxies;
 };
 
-const findExpansions = (grid: Grid, galaxies: Galaxy[]): Expansions => {
+const getDistanceBetween = (
+  start: Galaxy,
+  end: Galaxy,
+  expansionSize: number,
+  occupiedRows: number[],
+  occupiedCols: number[]
+): number => {
+  const minRow = Math.min(start.row, end.row);
+  const maxRow = Math.max(start.row, end.row);
+  const minCol = Math.min(start.col, end.col);
+  const maxCol = Math.max(start.col, end.col);
+
+  const distanceBetween = maxRow - minRow + maxCol - minCol;
+
+  const occupiedRowsBetween = occupiedRows.filter(rowIndex => rowIndex >= minRow && rowIndex < maxRow);
+  const occupiedColsBetween = occupiedCols.filter(colIndex => colIndex >= minCol && colIndex < maxCol);
+  const expansionCount = distanceBetween - occupiedRowsBetween.length - occupiedColsBetween.length;
+
+  return distanceBetween + expansionCount * expansionSize;
+};
+
+const getSumOfDistances = (galaxies: Galaxy[], expansionSize: number): number => {
   const occupiedRows = new Set<number>();
   const occupiedCols = new Set<number>();
 
@@ -43,39 +59,12 @@ const findExpansions = (grid: Grid, galaxies: Galaxy[]): Expansions => {
     occupiedCols.add(galaxy.col);
   }
 
-  const emptyRows = grid.map((_, rowIndex) => rowIndex).filter(rowIndex => !occupiedRows.has(rowIndex));
-  const emptyCols = grid[0].map((_, colIndex) => colIndex).filter(colIndex => !occupiedCols.has(colIndex));
-
-  return {
-    rows: emptyRows,
-    cols: emptyCols,
-  };
-};
-
-const getDistanceBetween = (
-  start: Galaxy,
-  end: Galaxy,
-  expansions: Expansions,
-  expansionSize: number
-): number => {
-  const minRow = Math.min(start.row, end.row);
-  const maxRow = Math.max(start.row, end.row);
-  const minCol = Math.min(start.col, end.col);
-  const maxCol = Math.max(start.col, end.col);
-
-  const expansionRows = expansions.rows.filter(rowIndex => rowIndex > minRow && rowIndex < maxRow);
-  const expansionCols = expansions.cols.filter(colIndex => colIndex > minCol && colIndex < maxCol);
-  const expansionCount = expansionRows.length + expansionCols.length;
-
-  return maxRow - minRow + maxCol - minCol + expansionCount * expansionSize;
-};
-
-const getSumOfDistances = (galaxies: Galaxy[], expansions: Expansions, expansionSize: number): number => {
   let sum = 0;
-
   for (let i = 0; i < galaxies.length; i++) {
+    const start = galaxies[i];
     for (let j = i + 1; j < galaxies.length; j++) {
-      sum += getDistanceBetween(galaxies[i], galaxies[j], expansions, expansionSize);
+      const end = galaxies[j];
+      sum += getDistanceBetween(start, end, expansionSize, [...occupiedRows], [...occupiedCols]);
     }
   }
 
@@ -88,13 +77,11 @@ const solveDay11 = () => {
 
   const galaxies = findGalaxies(grid);
 
-  const expansions = findExpansions(grid, galaxies);
-
   // Part 1:
-  console.log(`Part 1: ${getSumOfDistances(galaxies, expansions, 1)}`);
+  console.log(`Part 1: ${getSumOfDistances(galaxies, 1)}`);
 
   // Part 2:
-  console.log(`Part 2: ${getSumOfDistances(galaxies, expansions, 999999)}`);
+  console.log(`Part 2: ${getSumOfDistances(galaxies, 999999)}`);
 };
 
 solveDay11();
