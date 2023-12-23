@@ -1,5 +1,6 @@
 import {readInputFile} from '../util/read-input-file';
 import {sumReducer} from '../util/array-utils';
+import {parse} from 'path';
 
 type ConditionRecord = {
   springs: string;
@@ -12,25 +13,24 @@ const OPERATIONAL = '.';
 const DAMAGED = '#';
 const UNKNOWN = '?';
 
-const parseConditionRecord =
+const parseConditionRecord = (conditionRecordDescription: string): ConditionRecord => {
+  const [springs, groupDescriptions] = conditionRecordDescription.split(' ');
+  const damagedGroupSizes = groupDescriptions.split(',').map(Number);
+
+  return {
+    springs,
+    damagedGroupSizes,
+  };
+};
+
+const unfoldConditionRecord =
   (foldCount: number) =>
-  (conditionRecordDescription: string): ConditionRecord => {
-    const [springs, groupDescriptions] = conditionRecordDescription.split(' ');
-    const damagedGroupSizes = groupDescriptions.split(',').map(Number);
-
-    if (foldCount <= 1) {
-      return {
-        springs,
-        damagedGroupSizes,
-      };
-    }
-
-    const unfoldedSprings = Array(foldCount).fill(springs).join('?');
-    const unfoldedGroupSizes = Array(5).fill(damagedGroupSizes).flat();
+  (conditionRecord: ConditionRecord): ConditionRecord => {
+    if (foldCount < 2) return conditionRecord;
 
     return {
-      springs: unfoldedSprings,
-      damagedGroupSizes: unfoldedGroupSizes,
+      springs: Array(foldCount).fill(conditionRecord.springs).join('?'),
+      damagedGroupSizes: Array(foldCount).fill(conditionRecord.damagedGroupSizes).flat(),
     };
   };
 
@@ -92,18 +92,15 @@ const getValidArrangements = ({springs, damagedGroupSizes}: ConditionRecord): nu
 };
 
 const solveDay12 = () => {
-  const conditionRecordDescriptions = readInputFile(2023, 12).split('\n');
+  const conditionRecords = readInputFile(2023, 12).split('\n').map(parseConditionRecord);
 
   // Part 1: possible arrangements to fulfill folded record conditions
-  const possibleArrangementsForFoldedRecords = conditionRecordDescriptions
-    .map(parseConditionRecord(0))
-    .map(getValidArrangements)
-    .reduce(sumReducer);
+  const possibleArrangementsForFoldedRecords = conditionRecords.map(getValidArrangements).reduce(sumReducer);
   console.log(`Part 1: ${possibleArrangementsForFoldedRecords}`);
 
   // Part 2: possible arrangements to fulfill unfolded record conditions
-  const possibleArrangementsForUnfoldedRecords = conditionRecordDescriptions
-    .map(parseConditionRecord(5))
+  const possibleArrangementsForUnfoldedRecords = conditionRecords
+    .map(unfoldConditionRecord(5))
     .map(getValidArrangements)
     .reduce(sumReducer);
   console.log(`Part 2: ${possibleArrangementsForUnfoldedRecords}`);
