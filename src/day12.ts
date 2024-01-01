@@ -1,6 +1,5 @@
 import {readInputFile} from '../util/read-input-file';
 import {sumReducer} from '../util/array-utils';
-import {parse} from 'path';
 
 type ConditionRecord = {
   springs: string;
